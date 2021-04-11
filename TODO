@@ -1,0 +1,20 @@
+https://github.com/johnstonskj/behavior/tree/master
+
+You should look at how you might parse SCTOML and give a state machine.
+(State Chart XML)
+
+I think that for the *tick* event, you might be able to do this with the (getitimer)
+
+https://www.gnu.org/software/guile/manual/html_node/Signals.html
+(setitimer ITIMER_REAL
+           5 500000     ;; Raise SIGALRM every 5.5 seconds
+           2 0)         ;; with the first SIGALRM in 2 seconds
+This would then be handled in a SIGALRM handler:
+(define (stuff signum)
+    (when (= signum SIGALRM)
+        (display "caught alarm\n")))
+
+(sigaction SIGALRM stuff)
+
+I guess for the operation of delayed things, you have to set the granularity of
+the tick timer to be the LCM of the two intervals? (Or something close to it).
